@@ -562,7 +562,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
           image.copyResize(capturedImage, width: targetWidth);
 
       bytes += generator.image(resizedImage);
-      bytes += generator.feed(2);
       bytes += generator.cut();
 
       await PrintBluetoothThermal.writeBytes(bytes);
