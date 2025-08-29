@@ -217,6 +217,18 @@ class _UrlEntryScreenState extends State<UrlEntryScreen> {
   final TextEditingController _urlController = TextEditingController();
   bool _isLoading = false;
 
+  // ADDED: Disconnect method
+  Future<void> _disconnectPrinter() async {
+    await PrintBluetoothThermal.disconnect;
+    if (!mounted) return;
+    // Navigate back to the connection screen, clearing the navigation stack
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const PrinterConnectionScreen()),
+      (route) => false,
+    );
+    _showMessage('Printer disconnected');
+  }
+
   Future<void> _loadWebpage() async {
     final String url = _urlController.text.trim();
 
@@ -256,6 +268,14 @@ class _UrlEntryScreenState extends State<UrlEntryScreen> {
       appBar: AppBar(
         title: const Text('Enter URL'),
         leading: const Icon(Icons.bluetooth_connected),
+        // ADDED: Disconnect button
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bluetooth_disabled),
+            onPressed: _disconnectPrinter,
+            tooltip: 'Disconnect Printer',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -342,6 +362,19 @@ class _WebViewScreenState extends State<WebViewScreen> {
   void initState() {
     super.initState();
     _initializeWebView();
+  }
+
+  // ADDED: Disconnect method
+  Future<void> _disconnectPrinter() async {
+    await PrintBluetoothThermal.disconnect;
+    if (!mounted) return;
+    // Navigate back to the connection screen, clearing the navigation stack
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const PrinterConnectionScreen()),
+      (route) => false,
+    );
+    // Can't show a snackbar here as the context is being destroyed,
+    // but the navigation itself is clear feedback.
   }
 
   void _initializeWebView() {
@@ -555,6 +588,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
       appBar: AppBar(
         title: const Text('Bill Preview'),
         actions: [
+          // ADDED: Disconnect button
+          IconButton(
+            icon: const Icon(Icons.bluetooth_disabled),
+            onPressed: _disconnectPrinter,
+            tooltip: 'Disconnect Printer',
+          ),
           IconButton(
             onPressed: (_isCapturing || _isPageLoading) ? null : _captureFullPage,
             icon: _isCapturing
